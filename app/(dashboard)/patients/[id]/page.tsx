@@ -22,6 +22,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
   const [patient, setPatient] = useState<Patient | null>(null);
   const [history, setHistory] = useState<TreatmentHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showAddHistory, setShowAddHistory] = useState(false);
   const [historyForm, setHistoryForm] = useState({
     treatmentName: '',
@@ -44,6 +45,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         setHistory(historyRes.history || []);
       } catch (err) {
         console.error('Failed to load patient:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load patient data');
       } finally {
         setLoading(false);
       }
@@ -92,7 +94,14 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
   if (!patient) {
     return (
       <div className="text-center py-16">
-        <p className="text-muted-foreground">Patient not found.</p>
+        {error ? (
+          <>
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-destructive/60" />
+            <p className="text-muted-foreground mb-2">{error}</p>
+          </>
+        ) : (
+          <p className="text-muted-foreground">Patient not found.</p>
+        )}
         <Link href="/patients"><Button variant="outline" className="mt-4">Back to patients</Button></Link>
       </div>
     );

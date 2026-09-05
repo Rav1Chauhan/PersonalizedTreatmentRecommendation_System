@@ -14,6 +14,7 @@ import type { Patient } from '@/types';
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function PatientsPage() {
         setPatients(res.patients || []);
       } catch (err) {
         console.error('Failed to load patients:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load patients');
       } finally {
         setLoading(false);
       }
@@ -72,6 +74,14 @@ export default function PatientsPage() {
             <Skeleton key={i} className="h-24 w-full" />
           ))}
         </div>
+      ) : error ? (
+        <Card>
+          <CardContent className="py-16 text-center">
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-destructive/60" />
+            <p className="text-muted-foreground mb-2">{error}</p>
+            <p className="text-xs text-muted-foreground">Make sure you are signed in and the database is reachable.</p>
+          </CardContent>
+        </Card>
       ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center">

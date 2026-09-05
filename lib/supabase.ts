@@ -34,6 +34,11 @@ export function getSupabaseAdmin() {
   });
 }
 
+let browserClient: ReturnType<typeof createClient> | null = null;
+
 export function getSupabaseBrowserClient() {
-  return createClient(supabaseUrl, supabaseAnonKey);
+  if (!browserClient) {
+    browserClient = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return browserClient;
 }

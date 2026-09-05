@@ -1,7 +1,5 @@
 import { getSupabaseBrowserClient } from '@/lib/supabase';
 
-const supabase = getSupabaseBrowserClient();
-
 export async function apiFetch<T>(
   path: string,
   options?: {
@@ -9,6 +7,7 @@ export async function apiFetch<T>(
     body?: unknown;
   }
 ): Promise<T> {
+  const supabase = getSupabaseBrowserClient();
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData.session?.access_token;
 
