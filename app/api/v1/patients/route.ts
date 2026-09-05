@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import { computeBmi } from '@/services/context-builder';
 import type { Patient } from '@/types';
@@ -33,7 +34,7 @@ function mapPatient(row: Record<string, unknown>): Patient {
 export async function GET(req: Request) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   const supabase = getServerSupabase(req);
@@ -43,17 +44,17 @@ export async function GET(req: Request) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   const patients = (data || []).map(mapPatient);
-  return Response.json({ patients });
+  return NextResponse.json({ patients });
 }
 
 export async function POST(req: Request) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -61,16 +62,16 @@ export async function POST(req: Request) {
     const { name, age, gender, weightKg, heightCm, diagnosis, symptoms, allergies, chronicConditions, geneticDisorders } = body;
 
     if (!name || age === undefined || !gender) {
-      return Response.json({ error: 'Name, age, and gender are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Name, age, and gender are required' }, { status: 400 });
     }
 
     const numericAge = Number(age);
     if (isNaN(numericAge) || numericAge < 0 || numericAge > 150) {
-      return Response.json({ error: 'Invalid age' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid age' }, { status: 400 });
     }
 
     if (!['male', 'female', 'other'].includes(gender)) {
-      return Response.json({ error: 'Invalid gender' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid gender' }, { status: 400 });
     }
 
     const wKg = weightKg ? Number(weightKg) : null;
@@ -97,12 +98,12 @@ export async function POST(req: Request) {
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ patient: mapPatient(data) }, { status: 201 });
+    return NextResponse.json({ patient: mapPatient(data) }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { isProviderEnabled } from '@/lib/config';
 import { getMLModel } from '@/services/patient-ml';
@@ -33,7 +34,7 @@ export async function GET() {
       : 'degraded'
     : 'unhealthy';
 
-  return Response.json({
+  return NextResponse.json({
     application,
     database,
     mlModels,

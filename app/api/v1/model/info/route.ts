@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { MODEL_VERSION, isProviderEnabled } from '@/lib/config';
 import { getMLModel } from '@/services/patient-ml';
 import { getDatasetInfo } from '@/services/evidence-retrieval';
@@ -13,7 +14,7 @@ export async function GET() {
   if (isProviderEnabled('openai')) enabledProviders.push('openai');
   if (isProviderEnabled('claude')) enabledProviders.push('claude');
 
-  return Response.json({
+  return NextResponse.json({
     embeddingModel: 'TF-IDF + Jaccard similarity (computed in-process)',
     embeddingDimension: 0,
     retrievalModel: 'Hybrid TF-IDF + semantic similarity',

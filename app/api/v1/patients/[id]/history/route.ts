@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import type { TreatmentHistoryEntry } from '@/types';
 
@@ -21,7 +22,7 @@ export async function GET(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   const supabase = getServerSupabase(req);
@@ -32,11 +33,11 @@ export async function GET(
     .order('created_at', { ascending: false });
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   const history = (data || []).map(mapHistory);
-  return Response.json({ history });
+  return NextResponse.json({ history });
 }
 
 export async function POST(
@@ -45,7 +46,7 @@ export async function POST(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -53,7 +54,7 @@ export async function POST(
     const { treatmentName, outcome, adverseReaction, startedAt, endedAt, notes } = body;
 
     if (!treatmentName) {
-      return Response.json({ error: 'Treatment name is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Treatment name is required' }, { status: 400 });
     }
 
     const supabase = getServerSupabase(req);
@@ -72,12 +73,12 @@ export async function POST(
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return Response.json({ history: mapHistory(data) }, { status: 201 });
+    return NextResponse.json({ history: mapHistory(data) }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

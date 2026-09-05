@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import { computeBmi } from '@/services/context-builder';
 import type { Patient } from '@/types';
@@ -36,7 +37,7 @@ export async function GET(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   const supabase = getServerSupabase(req);
@@ -47,14 +48,14 @@ export async function GET(
     .maybeSingle();
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   if (!data) {
-    return Response.json({ error: 'Patient not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
   }
 
-  return Response.json({ patient: mapPatient(data) });
+  return NextResponse.json({ patient: mapPatient(data) });
 }
 
 export async function PUT(
@@ -63,7 +64,7 @@ export async function PUT(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -76,13 +77,13 @@ export async function PUT(
     if (age !== undefined) {
       const numericAge = Number(age);
       if (isNaN(numericAge) || numericAge < 0 || numericAge > 150) {
-        return Response.json({ error: 'Invalid age' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid age' }, { status: 400 });
       }
       updateData.age = numericAge;
     }
     if (gender !== undefined) {
       if (!['male', 'female', 'other'].includes(gender)) {
-        return Response.json({ error: 'Invalid gender' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid gender' }, { status: 400 });
       }
       updateData.gender = gender;
     }
@@ -112,17 +113,17 @@ export async function PUT(
       .single();
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     if (!data) {
-      return Response.json({ error: 'Patient not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
     }
 
-    return Response.json({ patient: mapPatient(data) });
+    return NextResponse.json({ patient: mapPatient(data) });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -132,7 +133,7 @@ export async function DELETE(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   const supabase = getServerSupabase(req);
@@ -142,8 +143,8 @@ export async function DELETE(
     .eq('id', params.id);
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return Response.json({ success: true });
+  return NextResponse.json({ success: true });
 }

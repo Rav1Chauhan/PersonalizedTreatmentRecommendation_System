@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import { buildPatientContext } from '@/services/context-builder';
 import { LLMOrchestrator } from '@/services/llm/orchestrator';
@@ -17,7 +18,7 @@ import type {
 export async function POST(req: Request) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -25,11 +26,11 @@ export async function POST(req: Request) {
     const { patientId, problem, providers, topK } = body;
 
     if (!patientId || !problem) {
-      return Response.json({ error: 'Patient ID and problem are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Patient ID and problem are required' }, { status: 400 });
     }
 
     if (problem.length > MAX_INPUT_CHARS) {
-      return Response.json({ error: `Problem text exceeds maximum length of ${MAX_INPUT_CHARS} characters` }, { status: 400 });
+      return NextResponse.json({ error: `Problem text exceeds maximum length of ${MAX_INPUT_CHARS} characters` }, { status: 400 });
     }
 
     const supabase = getServerSupabase(req);
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (patientError || !patientData) {
-      return Response.json({ error: 'Patient not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
     }
 
     const { data: historyData } = await supabase
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
 
     const successfulResults = results.filter((r) => r.status === 'success');
     if (successfulResults.length === 0) {
-      return Response.json({
+      return NextResponse.json({
         error: 'All AI providers failed or returned no candidates. Please try again.',
         providerStatus,
       }, { status: 503 });
@@ -222,10 +223,10 @@ export async function POST(req: Request) {
       modelVersion: MODEL_VERSION,
     };
 
-    return Response.json(response);
+    return NextResponse.json(response);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
     console.error('Recommendation API error:', message);
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

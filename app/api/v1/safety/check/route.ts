@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import { buildPatientContext } from '@/services/context-builder';
 import { checkSafety } from '@/services/safety-engine';
@@ -5,7 +6,7 @@ import { checkSafety } from '@/services/safety-engine';
 export async function POST(req: Request) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
     const { patientId, treatmentName } = body;
 
     if (!patientId || !treatmentName) {
-      return Response.json({ error: 'Patient ID and treatment name are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Patient ID and treatment name are required' }, { status: 400 });
     }
 
     const supabase = getServerSupabase(req);
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (error || !patientData) {
-      return Response.json({ error: 'Patient not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
     }
 
     const { data: historyData } = await supabase
@@ -59,9 +60,9 @@ export async function POST(req: Request) {
 
     const safetyResult = checkSafety(treatmentName, context);
 
-    return Response.json({ safety: safetyResult, treatment: treatmentName });
+    return NextResponse.json({ safety: safetyResult, treatment: treatmentName });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

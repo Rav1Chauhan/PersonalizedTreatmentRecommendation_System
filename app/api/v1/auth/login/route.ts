@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/api-auth';
 
 export async function POST(req: Request) {
@@ -6,7 +7,7 @@ export async function POST(req: Request) {
     const { email, password } = body;
 
     if (!email || !password) {
-      return Response.json({ error: 'Email and password are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
     const supabase = getServerSupabase();
@@ -17,10 +18,10 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      return Response.json({ error: error.message }, { status: 401 });
+      return NextResponse.json({ error: error.message }, { status: 401 });
     }
 
-    return Response.json({
+    return NextResponse.json({
       user: {
         id: data.user.id,
         email: data.user.email,
@@ -30,6 +31,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';
-    return Response.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

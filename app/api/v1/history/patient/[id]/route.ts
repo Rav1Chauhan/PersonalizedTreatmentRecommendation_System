@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 
 export async function GET(
@@ -6,7 +7,7 @@ export async function GET(
 ) {
   const authResult = await requireAuth(req);
   if (authResult.userId === null) {
-    return Response.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   const supabase = getServerSupabase(req);
@@ -36,8 +37,8 @@ export async function GET(
     .limit(50);
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return Response.json({ history: requests || [] });
+  return NextResponse.json({ history: requests || [] });
 }
