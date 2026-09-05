@@ -398,10 +398,12 @@ function ScoreBar({
           {displayValue}
         </span>
       </div>
-      <Progress
-        value={nullable && value === null ? 0 : percent}
-        className="h-1.5"
-      />
+      <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-500"
+          style={{ width: `${nullable && value === null ? 0 : percent}%` }}
+        />
+      </div>
     </div>
   );
 }
