@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -47,5 +48,5 @@ export async function requireAuth(req: Request): Promise<{ userId: string; error
 }
 
 export function jsonError(message: string, status: number) {
-  return Response.json({ error: message }, { status });
+  return NextResponse.json({ error: message }, { status });
 }

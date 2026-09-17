@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { requireAuth, getServerSupabase } from '@/lib/api-auth';
 import { computeBmi } from '@/services/context-builder';

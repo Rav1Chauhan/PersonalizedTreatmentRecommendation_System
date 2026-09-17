@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { isProviderEnabled } from '@/lib/config';

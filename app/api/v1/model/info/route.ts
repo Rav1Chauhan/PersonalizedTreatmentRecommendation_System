@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { MODEL_VERSION, isProviderEnabled } from '@/lib/config';
 import { getMLModel } from '@/services/patient-ml';
